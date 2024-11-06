@@ -1,0 +1,61 @@
+import requests
+import json
+import time
+import pandas as pd
+
+file_path = 'C:/Users/bohda/Downloads/Telegram Desktop/package_list.json'
+output_file = 'C:/Users/bohda/Downloads/Telegram Desktop/dataset_info.xlsx'
+
+with open(file_path, 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+dataset_ids = data.get("result", [])
+print(f"Dataset IDs: {dataset_ids}")
+
+if not dataset_ids:
+    print("No dataset IDs found. Please check the input file.")
+else:
+    all_datasets = []
+
+    for dataset_id in dataset_ids:
+        print(f"Processing dataset ID: {dataset_id}")
+        
+        dataset_url = f"https://data.loda.gov.ua/api/3/action/package_show?id={dataset_id}"
+        response = requests.get(dataset_url)
+        
+        if response.status_code == 200:
+            data = response.json()
+            result = data.get("result")
+            
+            if result:
+                dataset_info = {
+                    "Title": result.get("title"),
+                    "IdentifierPackageID": result.get("id"),
+                    "LandingPage": f"https://data.loda.gov.ua/dataset/{result.get('id')}",
+                    "Description": result.get("notes"),
+                    "Keywords": ", ".join(tag.get("display_name", "") for tag in result.get("tags", [])),
+                    "ContactPointFn": result.get("maintainer"),
+                    "PublisherName": result.get("organization", {}).get("title"),
+                    "ResourcesAmount": len(result.get("resources", [])),
+                    "Format": ", ".join([res.get("format", "") for res in result.get("resources", [])])
+                }
+                
+                all_datasets.append(dataset_info)
+            else:
+                print(f"No result found for dataset ID: {dataset_id}")
+        else:
+            print(f"Request failed for {dataset_id} with status code: {response.status_code}")
+        
+        time.sleep(0.01)
+
+    if all_datasets:
+        print("Finished processing datasets.")
+
+        df = pd.DataFrame(all_datasets)
+
+        df.to_excel(output_file, index=False)
+
+        print(f"Data has been saved to {output_file}")
+    else:
+        print("No datasets were processed.")
+
