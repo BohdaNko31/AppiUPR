@@ -1,0 +1,62 @@
+import requests
+import pandas as pd
+
+communities = [
+    "beji3bka-micbka-rpomada", "bi6pcbka-micbka-rpomada", "bickobnubka-cijibcbka-rpomada", 
+    "bopnhcbka-cejinwha-rpomada", "bopncjiabcbka-micbka-rpomada", "bpodibcbka-micbka-rpomada", 
+    "bycbka-micbka-rpomada", "bejinkojiio6ihcbka-cejinwha-rpomada", "bejinkomoctibcbka-micbka-rpomada", 
+    "rjinhrhcbka-micbka-rpomada", "rhi3dnhibcbka-cejinwha-rpomada", "ropodoubka-micbka-rpomada", 
+    "rpa6obeubko-dyjii6ibcbka-cijibcbka-rpomada", "dabndibcbka-cijibcbka-rpomada", 
+    "do6pomnjibcbka-micbka-rpomada", "do6pocnhcbko-marepibcbka-cijibcbka-rpomada", 
+    "do6potbipcbka-cejinwha-rpomada", "xndahibcbka-micbka-rpomada", "xobkibcbka-micbka-rpomada", 
+    "xobtaheubka-cijibcbka-rpomada", "xypabhehcbka-cejinwha-rpomada", "3a6ojiotuibcbka-cijibcbka-rpomada", 
+    "3nmhobodibcbka-cijibcbka-rpomada", "3ojiohibcbka-micbka-rpomada", "ibaho-opahkibcbka-cejinwha-rpomada", 
+    "kam-rhka-by3bka-micbka-rpomada", "ko3ibcbka-cijibcbka-rpomada", "komaphibcbka-micbka-rpomada", 
+    "kpachehcbka-cejinwha-rpomada", "kyjinkibcbka-cejinwha-rpomada", "jionatnhcbka-cejinwha-rpomada", 
+    "medehnubka-cejinwha-rpomada", "mnkojiaibcbka-micbka-rpomada", "mopwnhcbka-micbka-rpomada", 
+    "moctncbka-micbka-rpomada", "mypobahcbka-cijibcbka-rpomada", "hobokajinhibcbka-micbka-rpomada", 
+    "hobopo3dijibcbka-micbka-rpomada", "hoborpnhibcbka-cejinwha-rpomada", 
+    "novoiarychivska-selyshchna-rpomada", "o6pownhcbka-cijibcbka-rpomada", 
+    "ttepemnwjirhcbka-micbka-rpomada", "ttid6epi3uibcbka-cijibcbka-rpomada", 
+    "ttidkamihcbka-cejinwha-rpomada", "ttomoprhcbka-cejinwha-rpomada", 
+    "ttyctomntibcbka-micbka-rpomada", "paba-pycbka-micbka-rpomada", 
+    "padexibcbka-micbka-rpomada", "pajiibcbka-cijibcbka-rpomada", 
+    "po3badibcbka-cijibcbka-rpomada", "pydkibcbka-micbka-rpomada", 
+    "cam6ipcbka-micbka-rpomada", "skolivska-miska-rpomada", "cjiabcbka-cejinwha-rpomada", 
+    "cokajibcbka-micbka-rpomada", "cokijibhnubka-cijibcbka-rpomada", 
+    "cojiohkibcbka-cijibcbka-rpomada", "ctapocam6ipcbka-micbka-rpomada", 
+    "ctpnncbka-micbka-rpomada", "ctpijikibcbka-cijibcbka-rpomada", 
+    "cydobobnwhrhcbka-micbka-rpomada", "cxidhnubka-cejinwha-rpomada", 
+    "tpoctrheubka-cijibcbka-rpomada", "tpyckabeubka-micbka-rpomada", 
+    "typkibcbka-micbka-rpomada", "xnpibcbka-micbka-rpomada", 
+    "xodopibcbka-micbka-rpomada", "hepbohorpadcbka-micbka-rpomada", 
+    "wernhibcbka-cijibcbka-rpomada", "wnpeubka-cejinwha-rpomada", 
+    "rbopibcbka-micbka-rpomada"
+]
+
+data = []
+
+for community in communities:
+    url = f"https://data.loda.gov.ua/api/3/action/organization_show?id={community}"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        try:
+            json_data = response.json()
+            if json_data and "result" in json_data:
+                title = json_data["result"].get("title", "N/A")
+                package_count = json_data["result"].get("package_count", 0)
+                community_link = f"https://data.loda.gov.ua/organization/{community}"
+                data.append({"Title": title, "Package Count": package_count, "Link": community_link})
+            else:
+                print(f"No  result  in JSON for {community}")
+        except ValueError as e:
+            print(f"Pomulka analizu JSON for {community}: {e}")
+            print(f"Zmist: {response.text}")
+    else:
+        print(f"Failed to retrieve data for {community}: {response.status_code}")
+
+df = pd.DataFrame(data)
+df.to_excel("result.xlsx", index=False)
+
+print("Dani zapusano.")
