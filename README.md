@@ -3,3 +3,5 @@
 2.API analysis and field data output in EXCEL - This code collects information from the API about various communities on the data.loda.gov.ua platform and saves the result to an Excel file.
 
 3.Create Real people ID search - This code extracts the IDs of users registered in organizations through the API and displays them in an Excel file
+
+4.Collection of all users from the site - This code parses the site and displays all users in Excel
