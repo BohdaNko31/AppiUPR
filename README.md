@@ -5,3 +5,5 @@
 3.Create Real people ID search - This code extracts the IDs of users registered in organizations through the API and displays them in an Excel file
 
 4.Collection of all users from the site - This code parses the site and displays all users in Excel
+
+5.Comparing two files and outputting the file from bots ID only - This code compares 2 files and outputs bot IDs
