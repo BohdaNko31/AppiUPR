@@ -1,0 +1,50 @@
+import requests
+from openpyxl import Workbook
+
+url = "https://data.loda.gov.ua/api/3/action/organization_list"
+
+def get_organization_list():
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json().get("result", [])
+    else:
+        print("pomulka zapusu:", response.status_code)
+        return []
+
+def get_organization_details(org_id):
+    org_details_url = f"https://data.loda.gov.ua/api/3/action/organization_show?id={org_id}"
+    response = requests.get(org_details_url)
+    if response.status_code == 200:
+        return response.json().get("result", {})
+    else:
+        print(f"pomulka zapusu v {org_id}:", response.status_code)
+        return {}
+
+def fetch_users():
+    organizations = get_organization_list()
+    all_users = []
+
+    for org_id in organizations:
+        org_details = get_organization_details(org_id)
+        users = org_details.get("users", [])
+        for user in users:
+            all_users.append({"user_id": user.get("name")})
+
+    return all_users
+
+def save_to_excel(data, filename="usersnahi.xlsx"):
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Users"
+
+    sheet.append(["User ID"])  
+
+    for item in data:
+        sheet.append([item["user_id"]])  
+
+    workbook.save(filename)
+    print(f"dani zapusano v file: {filename}")
+
+if __name__ == "__main__":
+    user_data = fetch_users()
+    save_to_excel(user_data)
