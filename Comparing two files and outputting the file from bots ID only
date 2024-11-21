@@ -1,0 +1,14 @@
+import pandas as pd
+
+
+file1 = 'usersvsi.xlsx'  
+file2 = 'usersnahi.xlsx'  
+
+df1 = pd.read_excel(file1)
+df2 = pd.read_excel(file2)
+
+result = df1[~df1.apply(tuple, 1).isin(df2.apply(tuple, 1))]
+
+result.to_excel('resultbot.xlsx', index=False)
+
+print("save v 'resultbot.xlsx'.")
