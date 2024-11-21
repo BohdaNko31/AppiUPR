@@ -1,0 +1,32 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+base_url = "https://data.loda.gov.ua/user/"
+query_params = "?q=&order_by=name&page="
+
+users = []
+
+for page in range(1, 100):
+    url = base_url + query_params + str(page)
+    print(f"Parsing page {page}...")
+    response = requests.get(url)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "html.parser")
+        
+        user_elements = soup.select("#content > div.row.wrapper > div > article > div.module-content > ul a")
+        
+        for user in user_elements:
+            user_id = user.get("href", "").split("/")[-1]
+            if user_id:
+                users.append(user_id)
+    else:
+        print(f"pomulka zagruzki storinku {page}: {response.status_code}")
+
+print(f"znaideno {len(users)} users.")
+for user in users:
+    print(user)
+
+df = pd.DataFrame(users, columns=["User ID"])
+df.to_excel("usersvsi.xlsx", index=False)
+print("Results saved to 'usersvsi.xlsx'")
