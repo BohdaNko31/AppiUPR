@@ -7,3 +7,5 @@
 4.Collection of all users from the site - This code parses the site and displays all users in Excel
 
 5.Comparing two files and outputting the file from bots ID only - This code compares 2 files and outputs bot IDs
+
+6.Extract groups from Api This code extracts information about the group using identifiers, and if there is no group, it puts -
